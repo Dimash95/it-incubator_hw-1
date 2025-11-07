@@ -1,25 +1,28 @@
-const express = require("express");
+import express from "express";
 import { Request, Response } from "express";
 import { Video, PostVideo, PutVideo } from "./types";
 import { VideoResolutions } from "./validation";
-let data: Video[] = require("./data.json");
+import dataJson from "./data.json";
+import { HttpResponses } from "./const";
 
-export const apiRouter = express.Router();
+let data: Video[] = dataJson;
+const apiRouter = express.Router();
 
 apiRouter.get("/videos/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
-  data.forEach((video) => {
-    if (video.id === Number(id)) {
-      res.send(video);
-    }
-  });
+  const video = data.find((v) => v.id === Number(id));
 
-  res.send("Видео с таким id не существует!");
+  res.status(HttpResponses.OK).send(video);
+
+  if (!video)
+    res
+      .status(HttpResponses.NOT_FOUND)
+      .send(`Video with id ${id} doesn't exist!`);
 });
 
 apiRouter.get("/videos", (req: Request, res: Response) => {
-  res.send(data);
+  res.status(HttpResponses.OK).send(data);
 });
 
 apiRouter.post("/videos", (req: Request, res: Response) => {
@@ -30,13 +33,13 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
     res
-      .status(400)
+      .status(HttpResponses.BAD_REQUEST)
       .send(
         "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
       );
   }
 
-  data.push({
+  const newVideo = {
     id: data.length,
     title,
     author,
@@ -45,13 +48,15 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
     createdAt: new Date().toISOString(),
     publicationDate: new Date().toISOString(),
     availableResolutions,
-  });
-  res.send(data);
+  };
+
+  data.push(newVideo);
+  res.status(HttpResponses.CREATED).send(newVideo);
 });
 
 apiRouter.put("/videos/:id", (req: Request, res: Response) => {
   const { id } = req.params;
-  if (!id) res.send("Видео с таким id не существует!");
+  const video = data.find((v) => v.id === Number(id));
 
   const {
     title,
@@ -67,43 +72,41 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
     res
-      .status(400)
+      .status(HttpResponses.BAD_REQUEST)
       .send(
         "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
       );
   }
 
-  data.forEach((video) => {
-    if (video.id === Number(id)) {
-      video.title = title;
-      video.author = author;
-      video.availableResolutions = availableResolutions;
-      video.canBeDownloaded = canBeDownloaded;
-      video.minAgeRestriction = minAgeRestriction;
-      video.publicationDate = publicationDate;
-      res.send(video);
-    }
-  });
+  if (!video) {
+    res
+      .status(HttpResponses.NOT_FOUND)
+      .send(`Video with id ${id} doesn't exist!`);
+  } else {
+    video.title = title;
+    video.author = author;
+    video.availableResolutions = availableResolutions;
+    video.canBeDownloaded = canBeDownloaded;
+    video.minAgeRestriction = minAgeRestriction;
+    video.publicationDate = publicationDate;
+  }
 
-  res.send("Видео с таким id не существует!");
+  res.sendStatus(HttpResponses.NO_CONTENT);
 });
 
 apiRouter.delete("/videos/:id", (req: Request, res: Response) => {
   const { id } = req.params;
+  const videoIndex = data.findIndex((v) => v.id === Number(id));
 
-  let result: Video[] = [];
-
-  data.forEach((video) => {
-    if (video.id !== Number(id)) {
-      result.push(video);
-    }
-  });
-
-  if (data.length === result.length) {
-    res.send(`No video with id ${id}`);
+  if (videoIndex === -1) {
+    return res
+      .status(HttpResponses.NOT_FOUND)
+      .send(`Video with id ${id} doesn't exist!`);
   }
 
-  data = result;
+  data.splice(videoIndex, 1);
 
-  res.send(`Video ${id} was deleted!`);
+  return res.sendStatus(HttpResponses.NO_CONTENT);
 });
+
+export { apiRouter };
