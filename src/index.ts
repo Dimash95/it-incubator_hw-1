@@ -1,7 +1,7 @@
 const express = require("express");
 import { Request, Response } from "express";
 import { Video, PostVideo, PutVideo } from "./types";
-const data: Video[] = require("./data.json");
+let data: Video[] = require("./data.json");
 
 const app = express();
 const port = 3000;
@@ -66,6 +66,26 @@ app.put("/:id", (req: Request, res: Response) => {
   });
 
   res.send("Видео с таким id не существует!");
+});
+
+app.delete("/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  let result: Video[] = [];
+
+  data.forEach((video) => {
+    if (video.id !== Number(id)) {
+      result.push(video);
+    }
+  });
+
+  if (data.length === result.length) {
+    res.send(`No video with id ${id}`);
+  }
+
+  data = result;
+
+  res.send(`Video ${id} was deleted!`);
 });
 
 app.listen(port, () => {
