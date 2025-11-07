@@ -1,6 +1,7 @@
 const express = require("express");
 import { Request, Response } from "express";
 import { Video, PostVideo, PutVideo } from "./types";
+import { VideoResolutions } from "./const";
 let data: Video[] = require("./data.json");
 
 const app = express();
@@ -27,6 +28,17 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/", (req: Request, res: Response) => {
   const { title, author, availableResolutions } = req.body as PostVideo;
 
+  if (
+    !Array.isArray(availableResolutions) ||
+    !availableResolutions.every((r) => VideoResolutions.includes(r as any))
+  ) {
+    res
+      .status(400)
+      .send(
+        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
+      );
+  }
+
   data.push({
     id: data.length,
     title,
@@ -52,6 +64,17 @@ app.put("/:id", (req: Request, res: Response) => {
     minAgeRestriction,
     publicationDate,
   } = req.body as PutVideo;
+
+  if (
+    !Array.isArray(availableResolutions) ||
+    !availableResolutions.every((r) => VideoResolutions.includes(r as any))
+  ) {
+    res
+      .status(400)
+      .send(
+        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
+      );
+  }
 
   data.forEach((video) => {
     if (video.id === Number(id)) {
