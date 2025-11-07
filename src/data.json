@@ -1,0 +1,12 @@
+[
+  {
+    "id": 0,
+    "title": "string",
+    "author": "string",
+    "canBeDownloaded": true,
+    "minAgeRestriction": null,
+    "createdAt": "2025-11-07T07:27:22.930Z",
+    "publicationDate": "2025-11-07T07:27:22.930Z",
+    "availableResolutions": ["P144"]
+  }
+]
