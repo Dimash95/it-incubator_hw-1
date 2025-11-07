@@ -1,12 +1,7 @@
 const express = require("express");
 import { Request, Response } from "express";
-import data from "./data.json";
-
-type PostVideo = {
-  title: string;
-  author: string;
-  availableResolutions: string[];
-};
+import { Video, PostVideo, PutVideo } from "./types";
+const data: Video[] = require("./data.json");
 
 const app = express();
 const port = 3000;
@@ -30,7 +25,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.post("/", (req: Request, res: Response) => {
-  const { title, author, availableResolutions } = req.body;
+  const { title, author, availableResolutions } = req.body as PostVideo;
+
   data.push({
     id: data.length,
     title,
@@ -42,6 +38,34 @@ app.post("/", (req: Request, res: Response) => {
     availableResolutions,
   });
   res.send(data);
+});
+
+app.put("/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!id) res.send("Видео с таким id не существует!");
+
+  const {
+    title,
+    author,
+    availableResolutions,
+    canBeDownloaded,
+    minAgeRestriction,
+    publicationDate,
+  } = req.body as PutVideo;
+
+  data.forEach((video) => {
+    if (video.id === Number(id)) {
+      video.title = title;
+      video.author = author;
+      video.availableResolutions = availableResolutions;
+      video.canBeDownloaded = canBeDownloaded;
+      video.minAgeRestriction = minAgeRestriction;
+      video.publicationDate = publicationDate;
+      res.send(video);
+    }
+  });
+
+  res.send("Видео с таким id не существует!");
 });
 
 app.listen(port, () => {
