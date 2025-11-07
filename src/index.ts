@@ -13,6 +13,18 @@ const port = 3000;
 
 app.use(express.json());
 
+app.get("/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  data.forEach((video) => {
+    if (video.id === Number(id)) {
+      res.send(video);
+    }
+  });
+
+  res.send("Видео с таким id не существует!");
+});
+
 app.get("/", (req: Request, res: Response) => {
   res.send(data);
 });
