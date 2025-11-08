@@ -1,13 +1,4 @@
-const express = require("express");
-import { apiRouter } from "./router";
+import { app } from "./app";
+import serverless from "serverless-http";
 
-export const app = express();
-const port = 5000;
-
-app.use(express.json());
-
-app.use("/api", apiRouter);
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+export const handler = serverless(app);

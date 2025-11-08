@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --exec node --inspect -r ts-node/register src/index.ts",
+    "start:dev": "nodemon --exec node --inspect -r ts-node/register src/app.ts",
     "jest": "jest",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w"
@@ -24,6 +24,7 @@
     "@types/supertest": "^6.0.3",
     "express": "^5.1.0",
     "jest": "^30.2.0",
+    "serverless-http": "^4.0.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5"
   },
