@@ -34,11 +34,11 @@ apiRouter.get("/videos/:id", (req: Request, res: Response) => {
   const video = data.find((v) => v.id === Number(id));
 
   if (!video)
-    res
+    return res
       .status(HttpResponses.NOT_FOUND)
       .send(`Video with id ${id} doesn't exist!`);
 
-  res.status(HttpResponses.OK).send(video);
+  return res.status(HttpResponses.OK).send(video);
 });
 
 apiRouter.get("/videos", (req: Request, res: Response) => {
