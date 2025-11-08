@@ -1,4 +1,4 @@
-export type Video = {
+export type VideoType = {
   id: number;
   title: string;
   author: string;
@@ -9,13 +9,13 @@ export type Video = {
   availableResolutions: string[];
 };
 
-export type PostVideo = {
+export type PostVideoType = {
   title: string;
   author: string;
   availableResolutions: string[];
 };
 
-export type PutVideo = {
+export type PutVideoType = {
   title: string;
   author: string;
   availableResolutions: string[];

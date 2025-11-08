@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon --exec node --inspect -r ts-node/register src/index.ts",
+    "jest": "jest",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w"
   },
@@ -19,7 +20,12 @@
   },
   "homepage": "https://github.com/Dimash95/it-incubator-hw-1#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "express": "^5.1.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",

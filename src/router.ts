@@ -1,24 +1,30 @@
 import express from "express";
 import { Request, Response } from "express";
-import { Video, PostVideo, PutVideo } from "./types";
+import { VideoType, PostVideoType, PutVideoType } from "./types";
 import { VideoResolutions } from "./validation";
 import dataJson from "./data.json";
 import { HttpResponses } from "./const";
 
-let data: Video[] = dataJson;
+let data: VideoType[] = dataJson;
 const apiRouter = express.Router();
+
+apiRouter.delete("/testing/all-data", (req: Request, res: Response) => {
+  data = [];
+
+  return res.sendStatus(HttpResponses.NO_CONTENT);
+});
 
 apiRouter.get("/videos/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
   const video = data.find((v) => v.id === Number(id));
 
-  res.status(HttpResponses.OK).send(video);
-
   if (!video)
     res
       .status(HttpResponses.NOT_FOUND)
       .send(`Video with id ${id} doesn't exist!`);
+
+  res.status(HttpResponses.OK).send(video);
 });
 
 apiRouter.get("/videos", (req: Request, res: Response) => {
@@ -26,13 +32,13 @@ apiRouter.get("/videos", (req: Request, res: Response) => {
 });
 
 apiRouter.post("/videos", (req: Request, res: Response) => {
-  const { title, author, availableResolutions } = req.body as PostVideo;
+  const { title, author, availableResolutions } = req.body as PostVideoType;
 
   if (
     !Array.isArray(availableResolutions) ||
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
-    res
+    return res
       .status(HttpResponses.BAD_REQUEST)
       .send(
         "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
@@ -51,7 +57,7 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
   };
 
   data.push(newVideo);
-  res.status(HttpResponses.CREATED).send(newVideo);
+  return res.status(HttpResponses.CREATED).send(newVideo);
 });
 
 apiRouter.put("/videos/:id", (req: Request, res: Response) => {
@@ -65,13 +71,13 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
     canBeDownloaded,
     minAgeRestriction,
     publicationDate,
-  } = req.body as PutVideo;
+  } = req.body as PutVideoType;
 
   if (
     !Array.isArray(availableResolutions) ||
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
-    res
+    return res
       .status(HttpResponses.BAD_REQUEST)
       .send(
         "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
@@ -79,7 +85,7 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
   }
 
   if (!video) {
-    res
+    return res
       .status(HttpResponses.NOT_FOUND)
       .send(`Video with id ${id} doesn't exist!`);
   } else {
@@ -91,7 +97,7 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
     video.publicationDate = publicationDate;
   }
 
-  res.sendStatus(HttpResponses.NO_CONTENT);
+  return res.sendStatus(HttpResponses.NO_CONTENT);
 });
 
 apiRouter.delete("/videos/:id", (req: Request, res: Response) => {
