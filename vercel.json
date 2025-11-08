@@ -3,7 +3,13 @@
 
   "name": "it-incubator_hw-1",
 
-  "builds": [{ "src": "src/index.ts", "use": "@vercel/node" }],
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["src/data.json"] }
+    }
+  ],
 
   "routes": [{ "src": "/(.*)", "dest": "src/index.ts" }]
 }
