@@ -2,7 +2,6 @@ import express from "express";
 import { Request, Response } from "express";
 import { VideoType, PostVideoType, PutVideoType } from "./types";
 import { VideoResolutions } from "./validation";
-import dataJson from "./data.json";
 import { HttpResponses } from "./const";
 
 // let data: VideoType[] = dataJson;

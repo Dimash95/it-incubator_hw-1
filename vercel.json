@@ -6,8 +6,7 @@
   "builds": [
     {
       "src": "src/index.ts",
-      "use": "@vercel/node",
-      "config": { "includeFiles": ["src/data.json"] }
+      "use": "@vercel/node"
     }
   ],
 
