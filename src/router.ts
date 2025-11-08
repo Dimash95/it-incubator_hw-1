@@ -5,7 +5,21 @@ import { VideoResolutions } from "./validation";
 import dataJson from "./data.json";
 import { HttpResponses } from "./const";
 
-let data: VideoType[] = dataJson;
+// let data: VideoType[] = dataJson;
+
+let data: VideoType[] = [
+  {
+    id: 0,
+    title: "string",
+    author: "string",
+    canBeDownloaded: true,
+    minAgeRestriction: null as number | null,
+    createdAt: "2025-11-07T07:27:22.930Z",
+    publicationDate: "2025-11-07T07:27:22.930Z",
+    availableResolutions: ["P144"],
+  },
+];
+
 const apiRouter = express.Router();
 
 apiRouter.delete("/testing/all-data", (req: Request, res: Response) => {
