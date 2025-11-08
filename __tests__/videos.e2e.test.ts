@@ -1,9 +1,8 @@
 import request from "supertest";
-import { app } from "../src/app";
+import app from "../src/app";
 import { VideoType } from "../src/types";
 
 describe("/api/videos", () => {
-
   it("GET /api/videos - should return array of videos", async () => {
     const res = await request(app).get("/api/videos").expect(200);
 
