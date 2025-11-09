@@ -63,11 +63,17 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
     !Array.isArray(availableResolutions) ||
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
+    errors.push({
+      field: "availableResolutions",
+      message:
+        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160",
+    });
+  }
+
+  if (errors.length) {
     return res
       .status(HttpResponses.BAD_REQUEST)
-      .send(
-        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
-      );
+      .send({ errorsMessages: errors });
   }
 
   const createdAt = new Date();
@@ -136,6 +142,18 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
       field: "availableResolutions",
       message:
         "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160",
+    });
+  }
+
+  if (
+    minAgeRestriction !== null &&
+    (typeof minAgeRestriction !== "number" ||
+      minAgeRestriction < 1 ||
+      minAgeRestriction > 18)
+  ) {
+    errors.push({
+      field: "minAgeRestriction",
+      message: "minAgeRestriction must be a number between 1 and 18 or null",
     });
   }
 
