@@ -39,31 +39,25 @@ apiRouter.get("/videos", (req: Request, res: Response) => {
 apiRouter.post("/videos", (req: Request, res: Response) => {
   const { title, author, availableResolutions } = req.body as PostVideoType;
 
-  if (!title)
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("title", "Title is empty"));
+  const errors: { message: string; field: string }[] = [];
 
-  if (typeof title !== "string")
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("title", "Title is not string!"));
-
-  if (title.length > 40) {
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("title", "Title length should not exceed 40 characters"));
+  if (typeof title !== "string" || !title.trim()) {
+    errors.push({ field: "title", message: "Title is empty or not string!" });
+  } else if (title.length > 40) {
+    errors.push({
+      field: "title",
+      message: "Title length should not exceed 40 characters",
+    });
   }
 
-  if (!author)
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("author", "Author is empty!"));
-
-  if (typeof author !== "string")
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("author", "Author is not string!"));
+  if (typeof author !== "string" || !author.trim()) {
+    errors.push({ field: "author", message: "Author is empty or not string!" });
+  } else if (author.length > 20) {
+    errors.push({
+      field: "author",
+      message: "Author length should not exceed 20 characters",
+    });
+  }
 
   if (
     !Array.isArray(availableResolutions) ||
@@ -110,14 +104,14 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
 
   const errors: { message: string; field: string }[] = [];
 
-  if (!title) errors.push({ field: "title", message: "Title is empty" });
-  if (typeof title !== "string")
-    errors.push({ field: "title", message: "Title is not string!" });
-  if (title && title.length > 40)
+  if (typeof title !== "string" || !title.trim()) {
+    errors.push({ field: "title", message: "Title is empty or not string!" });
+  } else if (title.length > 40) {
     errors.push({
       field: "title",
       message: "Title length should not exceed 40 characters",
     });
+  }
 
   if (typeof canBeDownloaded !== "boolean")
     errors.push({
@@ -125,9 +119,14 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
       message: "CanBeDownloaded is not boolean!",
     });
 
-  if (!author) errors.push({ field: "author", message: "Author is empty!" });
-  if (typeof author !== "string")
-    errors.push({ field: "author", message: "Author is not string!" });
+  if (typeof author !== "string" || !author.trim()) {
+    errors.push({ field: "author", message: "Author is empty or not string!" });
+  } else if (author.length > 20) {
+    errors.push({
+      field: "author",
+      message: "Author length should not exceed 20 characters",
+    });
+  }
 
   if (
     !Array.isArray(availableResolutions) ||
