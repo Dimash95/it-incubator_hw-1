@@ -2,23 +2,23 @@ import express from "express";
 import { Request, Response } from "express";
 import { VideoType, PostVideoType, PutVideoType } from "./types";
 import { VideoResolutions } from "./validation";
-// import dataJson from "./data.json";
+import dataJson from "./data.json";
 import { HttpResponses } from "./const";
 
-// let data: VideoType[] = dataJson;
+let data: VideoType[] = dataJson;
 
-let data: VideoType[] = [
-  {
-    id: 0,
-    title: "string",
-    author: "string",
-    canBeDownloaded: true,
-    minAgeRestriction: null as number | null,
-    createdAt: "2025-11-07T07:27:22.930Z",
-    publicationDate: "2025-11-07T07:27:22.930Z",
-    availableResolutions: ["P144"],
-  },
-];
+// let data: VideoType[] = [
+//   {
+//     id: 0,
+//     title: "string",
+//     author: "string",
+//     canBeDownloaded: true,
+//     minAgeRestriction: null as number | null,
+//     createdAt: "2025-11-07T07:27:22.930Z",
+//     publicationDate: "2025-11-07T07:27:22.930Z",
+//     availableResolutions: ["P144"],
+//   },
+// ];
 
 const apiRouter = express.Router();
 
@@ -47,6 +47,18 @@ apiRouter.get("/videos", (req: Request, res: Response) => {
 
 apiRouter.post("/videos", (req: Request, res: Response) => {
   const { title, author, availableResolutions } = req.body as PostVideoType;
+
+  if (!title)
+    return res.status(HttpResponses.BAD_REQUEST).send("Title is empty!");
+
+  if (typeof title !== "string")
+    return res.status(HttpResponses.BAD_REQUEST).send("Title is not string!");
+
+  if (!author)
+    return res.status(HttpResponses.BAD_REQUEST).send("Author is empty!");
+
+  if (typeof author !== "string")
+    return res.status(HttpResponses.BAD_REQUEST).send("Author is not string!");
 
   if (
     !Array.isArray(availableResolutions) ||
@@ -86,6 +98,18 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
     minAgeRestriction,
     publicationDate,
   } = req.body as PutVideoType;
+
+  if (!title)
+    return res.status(HttpResponses.BAD_REQUEST).send("Title is empty!");
+
+  if (typeof title !== "string")
+    return res.status(HttpResponses.BAD_REQUEST).send("Title is not string!");
+
+  if (!author)
+    return res.status(HttpResponses.BAD_REQUEST).send("Author is empty!");
+
+  if (typeof author !== "string")
+    return res.status(HttpResponses.BAD_REQUEST).send("Author is not string!");
 
   if (
     !Array.isArray(availableResolutions) ||
