@@ -7,18 +7,9 @@ import { HttpResponses } from "./const";
 
 let data: VideoType[] = dataJson;
 
-// let data: VideoType[] = [
-//   {
-//     id: 0,
-//     title: "string",
-//     author: "string",
-//     canBeDownloaded: true,
-//     minAgeRestriction: null as number | null,
-//     createdAt: "2025-11-07T07:27:22.930Z",
-//     publicationDate: "2025-11-07T07:27:22.930Z",
-//     availableResolutions: ["P144"],
-//   },
-// ];
+const makeError = (field: string, message: string) => ({
+  errorsMessages: [{ message, field }],
+});
 
 const apiRouter = express.Router();
 
@@ -49,16 +40,24 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
   const { title, author, availableResolutions } = req.body as PostVideoType;
 
   if (!title)
-    return res.status(HttpResponses.BAD_REQUEST).send("Title is empty!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("title", "Title is empty"));
 
   if (typeof title !== "string")
-    return res.status(HttpResponses.BAD_REQUEST).send("Title is not string!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("title", "Title is not string!"));
 
   if (!author)
-    return res.status(HttpResponses.BAD_REQUEST).send("Author is empty!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("author", "Author is empty!"));
 
   if (typeof author !== "string")
-    return res.status(HttpResponses.BAD_REQUEST).send("Author is not string!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("author", "Author is not string!"));
 
   if (
     !Array.isArray(availableResolutions) ||
@@ -71,14 +70,18 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
       );
   }
 
+  const createdAt = new Date();
+  const publicationDate = new Date(createdAt);
+  publicationDate.setDate(createdAt.getDate() + 1);
+
   const newVideo = {
     id: data.length,
     title,
     author,
-    canBeDownloaded: true,
+    canBeDownloaded: false,
     minAgeRestriction: null,
-    createdAt: new Date().toISOString(),
-    publicationDate: new Date().toISOString(),
+    createdAt: createdAt.toISOString(),
+    publicationDate: publicationDate.toISOString(),
     availableResolutions,
   };
 
@@ -100,16 +103,34 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
   } = req.body as PutVideoType;
 
   if (!title)
-    return res.status(HttpResponses.BAD_REQUEST).send("Title is empty!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("title", "Title is empty"));
 
   if (typeof title !== "string")
-    return res.status(HttpResponses.BAD_REQUEST).send("Title is not string!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("title", "Title is not string!"));
 
   if (!author)
-    return res.status(HttpResponses.BAD_REQUEST).send("Author is empty!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("author", "Author is empty!"));
 
   if (typeof author !== "string")
-    return res.status(HttpResponses.BAD_REQUEST).send("Author is not string!");
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("author", "Author is not string!"));
+
+  if (!canBeDownloaded)
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("canBeDownloaded", "CanBeDownloaded is empty!"));
+
+  if (typeof canBeDownloaded !== "boolean")
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("canBeDownloaded", "CanBeDownloaded is not boolean!"));
 
   if (
     !Array.isArray(availableResolutions) ||
