@@ -49,6 +49,12 @@ apiRouter.post("/videos", (req: Request, res: Response) => {
       .status(HttpResponses.BAD_REQUEST)
       .send(makeError("title", "Title is not string!"));
 
+  if (title.length > 40) {
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send(makeError("title", "Title length should not exceed 40 characters"));
+  }
+
   if (!author)
     return res
       .status(HttpResponses.BAD_REQUEST)
@@ -102,59 +108,54 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
     publicationDate,
   } = req.body as PutVideoType;
 
-  if (!title)
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("title", "Title is empty"));
+  const errors: { message: string; field: string }[] = [];
 
+  if (!title) errors.push({ field: "title", message: "Title is empty" });
   if (typeof title !== "string")
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("title", "Title is not string!"));
-
-  if (!author)
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("author", "Author is empty!"));
-
-  if (typeof author !== "string")
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("author", "Author is not string!"));
-
-  if (!canBeDownloaded)
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("canBeDownloaded", "CanBeDownloaded is empty!"));
+    errors.push({ field: "title", message: "Title is not string!" });
+  if (title && title.length > 40)
+    errors.push({
+      field: "title",
+      message: "Title length should not exceed 40 characters",
+    });
 
   if (typeof canBeDownloaded !== "boolean")
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(makeError("canBeDownloaded", "CanBeDownloaded is not boolean!"));
+    errors.push({
+      field: "canBeDownloaded",
+      message: "CanBeDownloaded is not boolean!",
+    });
+
+  if (!author) errors.push({ field: "author", message: "Author is empty!" });
+  if (typeof author !== "string")
+    errors.push({ field: "author", message: "Author is not string!" });
 
   if (
     !Array.isArray(availableResolutions) ||
     !availableResolutions.every((r) => VideoResolutions.includes(r as any))
   ) {
-    return res
-      .status(HttpResponses.BAD_REQUEST)
-      .send(
-        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160"
-      );
+    errors.push({
+      field: "availableResolutions",
+      message:
+        "Resolution of video must be: P144, P240, P360, P480, P720, P1080, P1440, P2160",
+    });
   }
 
-  if (!video) {
+  if (errors.length)
+    return res
+      .status(HttpResponses.BAD_REQUEST)
+      .send({ errorsMessages: errors });
+
+  if (!video)
     return res
       .status(HttpResponses.NOT_FOUND)
       .send(`Video with id ${id} doesn't exist!`);
-  } else {
-    video.title = title;
-    video.author = author;
-    video.availableResolutions = availableResolutions;
-    video.canBeDownloaded = canBeDownloaded;
-    video.minAgeRestriction = minAgeRestriction;
-    video.publicationDate = publicationDate;
-  }
+
+  video.title = title;
+  video.author = author;
+  video.availableResolutions = availableResolutions;
+  video.canBeDownloaded = canBeDownloaded;
+  video.minAgeRestriction = minAgeRestriction;
+  video.publicationDate = publicationDate;
 
   return res.sendStatus(HttpResponses.NO_CONTENT);
 });
