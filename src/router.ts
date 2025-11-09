@@ -146,6 +146,16 @@ apiRouter.put("/videos/:id", (req: Request, res: Response) => {
   }
 
   if (
+    typeof publicationDate !== "string" ||
+    isNaN(Date.parse(publicationDate))
+  ) {
+    errors.push({
+      field: "publicationDate",
+      message: "publicationDate must be a valid ISO string date",
+    });
+  }
+
+  if (
     minAgeRestriction !== null &&
     (typeof minAgeRestriction !== "number" ||
       minAgeRestriction < 1 ||
